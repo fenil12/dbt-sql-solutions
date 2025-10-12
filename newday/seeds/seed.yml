@@ -1,0 +1,221 @@
+version: 2
+
+seeds:
+  - name: customers
+    description: "Customer master data containing identifiers, contact info, and lifecycle status."
+    columns:
+      - name: CUSTOMER_ID
+        description: "Unique identifier for the customer."
+        data_type: VARCHAR
+
+      - name: CUSTOMER_NAME
+        description: "Full name of the customer."
+        data_type: VARCHAR
+
+      - name: CUSTOMER_EMAIL
+        description: "Primary email address of the customer."
+        data_type: VARCHAR
+
+      - name: START_DATE
+        description: "Date when the customer record became active."
+        data_type: DATE
+
+      - name: END_DATE
+        description: "Date when the customer record was deactivated or ended."
+        data_type: DATE
+
+      - name: STATUS
+        description: "Current status of the customer (e.g., Active, Inactive, Suspended)."
+        data_type: VARCHAR
+
+
+  - name: kafka_stream
+    description: "Event stream data captured from Kafka containing customer interactions with products."
+    columns:
+      - name: CUSTOMER_ID
+        description: "Unique identifier for the customer generating the event."
+        data_type: VARCHAR
+
+      - name: PRODUCT_ID
+        description: "Unique identifier of the product involved in the interaction."
+        data_type: VARCHAR
+
+      - name: INTERACTION_TYPE
+        description: "Type of interaction recorded (e.g., click, view, purchase)."
+        data_type: VARCHAR
+
+      - name: TIMESTAMP
+        description: "Timestamp of when the event occurred, stored with nanosecond precision."
+        data_type: TIMESTAMP_NTZ(9)
+
+
+  - name: product
+    description: "Master data for products, including product name and associated category."
+    columns:
+      - name: PRODUCT_ID
+        description: "Unique identifier for each product."
+        data_type: VARCHAR
+
+      - name: PRODUCT_NAME
+        description: "Descriptive name of the product."
+        data_type: VARCHAR
+
+      - name: PRODUCT_CATEGORY_ID
+        description: "Identifier for the category or group the product belongs to."
+        data_type: VARCHAR
+      
+  
+  - name: product_category
+    description: "Comprehensive product catalog data including categories, pricing, stock, and supplier information."
+    columns:
+      - name: PRODUCT_ID
+        description: "Unique identifier for the product."
+        data_type: VARCHAR
+
+      - name: CATEGORY_ID
+        description: "Unique identifier for the product category."
+        data_type: VARCHAR
+
+      - name: CATEGORY_NAME
+        description: "Name of the product category (e.g., Electronics, Apparel)."
+        data_type: VARCHAR
+
+      - name: SUBCATEGORY
+        description: "Subcategory name within the main category."
+        data_type: VARCHAR
+
+      - name: BRAND
+        description: "Brand name associated with the product."
+        data_type: VARCHAR
+
+      - name: SUPPLIER_ID
+        description: "Identifier for the supplier providing the product."
+        data_type: VARCHAR
+
+      - name: COST_PRICE
+        description: "Product’s cost price as provided by the supplier."
+        data_type: FLOAT
+
+      - name: RETAIL_PRICE
+        description: "Retail selling price of the product."
+        data_type: FLOAT
+
+      - name: MARGIN_PERCENT
+        description: "Margin percentage calculated as (Retail - Cost) / Retail."
+        data_type: FLOAT
+
+      - name: STOCK_LEVEL
+        description: "Current inventory level (number of items in stock)."
+        data_type: NUMBER(38,0)
+
+      - name: REORDER_POINT
+        description: "Inventory threshold at which a reorder is triggered."
+        data_type: NUMBER(38,0)
+
+      - name: DISCONTINUED
+        description: "Boolean flag indicating whether the product is discontinued."
+        data_type: BOOLEAN
+
+      - name: LAUNCH_DATE
+        description: "Date when the product was first launched or became available."
+        data_type: DATE
+
+      - name: LAST_UPDATED
+        description: "Date when the product information was last updated."
+        data_type: DATE
+  
+
+  - name: sales_fact
+    description: "Fact table containing detailed sales transactions including customer, product, pricing, and payment information."
+    columns:
+      - name: ORDER_ID
+        description: "Unique identifier for the sales order."
+        data_type: VARCHAR
+
+      - name: PRODUCT_ID
+        description: "Identifier for the product that was sold."
+        data_type: VARCHAR
+
+      - name: CUSTOMER_ID
+        description: "Identifier for the customer who placed the order."
+        data_type: VARCHAR
+
+      - name: ORDER_DATE
+        description: "Date when the order was placed."
+        data_type: DATE
+
+      - name: ORDER_AMOUNT
+        description: "Total monetary amount of the order after discounts and before shipping."
+        data_type: FLOAT
+
+      - name: ORDER_QUANTITY
+        description: "Total number of product units in the order."
+        data_type: NUMBER(38,0)
+
+      - name: PAYMENT_METHOD
+        description: "Method used for payment (e.g., Credit Card, PayPal, Bank Transfer)."
+        data_type: VARCHAR
+
+      - name: DISCOUNT_APPLIED
+        description: "Discount amount or percentage applied to the order."
+        data_type: FLOAT
+
+      - name: SHIPPING_COST
+        description: "Cost incurred for shipping the order."
+        data_type: FLOAT
+
+      - name: CREATED_AT
+        description: "Timestamp when the sales order record was created."
+        data_type: TIMESTAMP_NTZ(9)
+    
+  
+  - name: subscription_data
+    description: "Subscription dataset capturing customer subscription details, plan types, billing information, and lifecycle status."
+    columns:
+      - name: CUSTOMER_ID
+        description: "Unique numeric identifier for the customer."
+        data_type: NUMBER(38,0)
+
+      - name: SUBSCRIPTION_ID
+        description: "Unique identifier for each subscription record."
+        data_type: VARCHAR
+
+      - name: PLAN_TYPE
+        description: "Type of subscription plan (e.g., Basic, Premium, Enterprise)."
+        data_type: VARCHAR
+
+      - name: SUBSCRIPTION_START_DATE
+        description: "Date when the subscription began."
+        data_type: DATE
+
+      - name: SUBSCRIPTION_END_DATE
+        description: "Date when the subscription ended or is set to expire."
+        data_type: DATE
+
+      - name: MONTHLY_FEE
+        description: "Monthly recurring fee charged for the subscription."
+        data_type: FLOAT
+
+      - name: STATUS
+        description: "Current state of the subscription (e.g., Active, Cancelled, Paused)."
+        data_type: VARCHAR
+    
+  
+  - name: weather_data
+    description: "Historical daily weather data including temperature, precipitation, and city information."
+    columns:
+      - name: DATE
+        description: "Date of the weather observation."
+        data_type: DATE
+
+      - name: TEMPERATURE
+        description: "Average daily temperature in degrees (Celsius or Fahrenheit depending on the dataset)."
+        data_type: FLOAT
+
+      - name: PRECIPITATION
+        description: "Total daily precipitation amount (e.g., in millimeters or inches)."
+        data_type: FLOAT
+
+      - name: CITY
+        description: "City where the weather data was recorded."
+        data_type: VARCHAR

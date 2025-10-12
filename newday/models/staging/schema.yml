@@ -1,0 +1,67 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Cleaned customer data with basic data quality checks"
+    columns:
+      - name: CUSTOMER_ID
+        description: "Unique identifier for the customer"
+        tests:
+          - unique
+          - not_null
+      - name: CUSTOMER_EMAIL
+        description: "Primary email address with validity flag"
+        tests:
+          - not_null
+
+  - name: stg_sales_fact
+    description: "Cleaned sales fact data with null handling and derived fields"
+    columns:
+      - name: ORDER_ID
+        tests:
+          - unique
+          - not_null
+      - name: ORDER_AMOUNT
+        tests:
+          - not_null
+
+  - name: stg_products
+    description: "Cleaned product master data"
+    columns:
+      - name: PRODUCT_ID
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_product_categories
+    description: "Cleaned product category data with inventory analysis"
+    columns:
+      - name: PRODUCT_ID
+        tests:
+          - unique
+          - not_null
+      - name: RETAIL_PRICE
+        tests:
+          - not_null
+
+  - name: stg_subscriptions
+    description: "Cleaned subscription data with status categorization"
+    columns:
+      - name: SUBSCRIPTION_ID
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_kafka_stream
+    description: "Cleaned event stream data from Kafka"
+    columns:
+      - name: TIMESTAMP
+        tests:
+          - not_null
+
+  - name: stg_weather_data
+    description: "Cleaned weather data with categorization"
+    columns:
+      - name: DATE
+        tests:
+          - not_null
