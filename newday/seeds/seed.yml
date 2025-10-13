@@ -1,7 +1,7 @@
 version: 2
 
 seeds:
-  - name: customers
+  - name: customer
     description: "Customer master data containing identifiers, contact info, and lifecycle status."
     columns:
       - name: CUSTOMER_ID

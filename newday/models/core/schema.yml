@@ -1,0 +1,204 @@
+version: 2
+
+models:
+  - name: bridge_product_category
+    description: "Bridge table connecting products to their categories and subcategories. Supports many-to-many relationships between products and product hierarchies."
+    columns:
+      - name: PRODUCT_ID
+        description: "Unique identifier for the product. Foreign key to products dimension."
+      - name: CATEGORY_ID
+        description: "Unique identifier for the product category. Foreign key to product categories."
+      - name: CATEGORY_NAME
+        description: "Name of the product category (e.g., Electronics, Clothing, Home Goods)."
+      - name: SUBCATEGORY
+        description: "More specific classification within the category (e.g., Smartphones, T-Shirts, Kitchenware)."
+      - name: load_timestamp
+        description: "Timestamp when this record was loaded into the data warehouse."
+
+  - name: dim_customers
+    description: "Customer dimension table with Type 2 Slowly Changing Dimensions (SCD) to track historical changes in customer attributes over time."
+    columns:
+      - name: CUSTOMER_ID
+        description: "Unique identifier for each customer. Primary key of the dimension table."
+      - name: CUSTOMER_NAME
+        description: "Full name of the customer."
+      - name: CUSTOMER_EMAIL
+        description: "Email address of the customer for communication and marketing purposes."
+      - name: CUSTOMER_SINCE_DATE
+        description: "Date when the customer first registered or made their first purchase."
+      - name: CUSTOMER_END_DATE
+        description: "Date when this customer record version became inactive (SCD Type 2)."
+      - name: CUSTOMER_STATUS
+        description: "Current status of the customer (Active, Inactive, Suspended, etc.)."
+      - name: IS_VALID_EMAIL
+        description: "Boolean flag indicating whether the email address format is valid."
+      - name: VALID_FROM
+        description: "Start date for when this version of customer attributes became effective (SCD Type 2)."
+      - name: VALID_TO
+        description: "End date for when this version of customer attributes is no longer effective (SCD Type 2). Defaults to 9999-12-31 for current records."
+      - name: IS_CURRENT
+        description: "Boolean flag indicating whether this is the current version of the customer record."
+
+  - name: dim_date
+    description: "Date dimension table with comprehensive date attributes for time-based analysis. Contains pre-calculated date components, seasons, and business periods."
+    columns:
+      - name: date_key
+        description: "Surrogate key for the date dimension, typically in YYYYMMDD format."
+      - name: year
+        description: "Calendar year (e.g., 2024)."
+      - name: quarter
+        description: "Calendar quarter (1-4)."
+      - name: month
+        description: "Calendar month (1-12)."
+      - name: day
+        description: "Day of the month (1-31)."
+      - name: day_of_week
+        description: "Day of the week (1=Sunday, 7=Saturday)."
+      - name: day_of_year
+        description: "Day of the year (1-366)."
+      - name: week_of_year
+        description: "Week number within the year (1-53)."
+      - name: month_name
+        description: "Full name of the month (e.g., January, February)."
+      - name: day_name
+        description: "Full name of the day (e.g., Monday, Tuesday)."
+      - name: day_type
+        description: "Classification of day as 'Weekday' or 'Weekend'."
+      - name: season
+        description: "Season of the year (Winter, Spring, Summer, Fall)."
+      - name: year_quarter
+        description: "Combined year and quarter identifier (e.g., '2024-Q1')."
+      - name: year_month
+        description: "Combined year and month identifier (e.g., '2024-01')."
+
+  - name: dim_products
+    description: "Product dimension table containing product master data, inventory information, pricing, and lifecycle status."
+    columns:
+      - name: PRODUCT_ID
+        description: "Unique identifier for the product. Primary key of the dimension table."
+      - name: PRODUCT_NAME
+        description: "Name or description of the product."
+      - name: PRODUCT_CATEGORY_ID
+        description: "Foreign key to the product category hierarchy."
+      - name: CATEGORY_NAME
+        description: "Name of the product category."
+      - name: SUBCATEGORY
+        description: "Subcategory classification within the main category."
+      - name: BRAND
+        description: "Brand or manufacturer of the product."
+      - name: SUPPLIER_ID
+        description: "Identifier for the product supplier or vendor."
+      - name: COST_PRICE
+        description: "Purchase cost of the product from the supplier."
+      - name: RETAIL_PRICE
+        description: "Selling price of the product to customers."
+      - name: MARGIN_PERCENT
+        description: "Profit margin percentage calculated as ((Retail Price - Cost Price) / Retail Price) * 100."
+      - name: PROFIT_MARGIN
+        description: "Absolute profit margin (Retail Price - Cost Price)."
+      - name: STOCK_LEVEL
+        description: "Current quantity of product available in inventory."
+      - name: REORDER_POINT
+        description: "Minimum stock level that triggers a reorder recommendation."
+      - name: INVENTORY_STATUS
+        description: "Current status of inventory (In Stock, Low Stock, Out of Stock)."
+      - name: DISCONTINUED
+        description: "Boolean flag indicating whether the product has been discontinued."
+      - name: LAUNCH_DATE
+        description: "Date when the product was first introduced to the market."
+      - name: PRODUCT_STATUS
+        description: "Business status of the product considering inventory and discontinuation (Available, Low Stock, Out of Stock, Discontinued)."
+      - name: DAYS_SINCE_LAUNCH
+        description: "Number of days since the product was launched, calculated from current date."
+
+  - name: fact_customer_behavior_events
+    description: "Fact table tracking customer interaction events and behavioral data from various touchpoints. Used for customer journey analysis and engagement metrics."
+    columns:
+      - name: event_id
+        description: "Unique identifier for each customer interaction event. Surrogate key for the fact table."
+      - name: CUSTOMER_ID
+        description: "Foreign key to the customer dimension, identifying who performed the event."
+      - name: PRODUCT_ID
+        description: "Foreign key to the product dimension, identifying which product was involved in the event."
+      - name: TIMESTAMP
+        description: "Exact timestamp when the event occurred."
+      - name: EVENT_DATE
+        description: "Date when the event occurred (derived from timestamp)."
+      - name: INTERACTION_TYPE
+        description: "Type of customer interaction (e.g., page_view, add_to_cart, purchase, review)."
+      - name: EVENT_CATEGORY
+        description: "High-level categorization of events (e.g., Engagement, Conversion, Support)."
+      - name: customer_event_sequence
+        description: "Sequential number of events for each customer, ordered by timestamp."
+      - name: session_id
+        description: "Identifier for grouping events into user sessions (simplified as customer_id + date)."
+      - name: hour_of_day
+        description: "Hour of the day when the event occurred (0-23)."
+      - name: is_conversion
+        description: "Boolean indicator (1/0) for events that represent conversion actions."
+      - name: is_engagement
+        description: "Boolean indicator (1/0) for events that represent engagement actions."
+
+  - name: fact_sales
+    description: "Sales fact table containing transactional sales data with financial metrics, profit calculations, and revenue analysis."
+    columns:
+      - name: ORDER_ID
+        description: "Unique identifier for the sales order. Primary key of the fact table."
+      - name: CUSTOMER_ID
+        description: "Foreign key to the customer dimension, identifying who made the purchase."
+      - name: PRODUCT_ID
+        description: "Foreign key to the product dimension, identifying what was purchased."
+      - name: ORDER_DATE
+        description: "Date when the order was placed."
+      - name: ORDER_AMOUNT
+        description: "Total amount of the sales order in the local currency."
+      - name: ORDER_NUMBER
+        description: "Degenerate dimension - business order identifier for reporting and tracing."
+      - name: sales_amount
+        description: "Revenue amount from the sale (same as order_amount)."
+      - name: cost_amount
+        description: "Calculated cost of goods sold for this order."
+      - name: gross_profit
+        description: "Gross profit calculated as sales_amount minus cost_amount."
+      - name: gross_margin
+        description: "Gross margin percentage calculated as gross_profit divided by sales_amount."
+
+  - name: fact_subscriptions
+    description: "Subscription fact table tracking customer subscription plans, status, duration, and recurring revenue metrics."
+    columns:
+      - name: SUBSCRIPTION_ID
+        description: "Unique identifier for each subscription instance."
+      - name: CUSTOMER_ID
+        description: "Foreign key to the customer dimension, identifying the subscriber."
+      - name: PLAN_TYPE
+        description: "Type of subscription plan (e.g., Basic, Premium, Enterprise)."
+      - name: SUBSCRIPTION_START_DATE
+        description: "Date when the subscription period began."
+      - name: SUBSCRIPTION_END_DATE
+        description: "Date when the subscription period ends or ended."
+      - name: STATUS
+        description: "Current status of the subscription (Active, Cancelled, Expired, etc.)."
+      - name: SUBSCRIPTION_DURATION_DAYS
+        description: "Planned or actual duration of the subscription in days."
+      - name: MONTHLY_FEE
+        description: "Recurring monthly charge for the subscription plan."
+      - name: is_active_subscription
+        description: "Boolean indicator (1/0) for currently active subscriptions."
+      - name: is_cancelled_subscription
+        description: "Boolean indicator (1/0) for cancelled subscriptions."
+
+  - name: fact_weather
+    description: "Conformed weather fact table containing daily weather conditions and categorical classifications for correlation analysis with business metrics."
+    columns:
+      - name: weather_date
+        description: "Date for which the weather data is recorded. Foreign key to date dimension."
+      - name: TEMPERATURE
+        description: "Recorded temperature in degrees Celsius or Fahrenheit."
+      - name: PRECIPITATION
+        description: "Amount of precipitation (rain, snow, etc.) in millimeters or inches."
+      - name: CITY
+        description: "City or location where the weather was recorded."
+      - name: TEMPERATURE_CATEGORY
+        description: "Categorical classification of temperature (e.g., Cold, Cool, Warm, Hot)."
+      - name: PRECIPITATION_CATEGORY
+        description: "Categorical classification of precipitation (e.g., None, Light, Moderate, Heavy)."
