@@ -35,9 +35,15 @@ models:
     staging:
       +materialized: view
       +schema: staging
-    marts:
+    core:
       +materialized: table
-      +schema: marts
+      +schema: core
+    finance:
+      +materialized: table
+      +schema: finance
+    customer:
+      +materialized: table
+      +schema: customer
 
 seeds:
   newday:

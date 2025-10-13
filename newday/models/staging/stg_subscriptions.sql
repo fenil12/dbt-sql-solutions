@@ -5,7 +5,13 @@
 }}
 
 SELECT
-    CAST(CUSTOMER_ID AS VARCHAR) AS CUSTOMER_ID, -- Consistent data type with other models
+    -- Apply conditional padding: pad only for IDs 1-999, no padding for 1000+
+    CASE 
+        WHEN CUSTOMER_ID BETWEEN 1 AND 999 THEN 
+            'CUST' || LPAD(CAST(CUSTOMER_ID AS VARCHAR), 3, '0')
+        ELSE 
+            'CUST' || CAST(CUSTOMER_ID AS VARCHAR)
+    END AS CUSTOMER_ID,
     SUBSCRIPTION_ID,
     PLAN_TYPE,
     SUBSCRIPTION_START_DATE,

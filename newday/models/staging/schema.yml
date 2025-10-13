@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stg_customers
+  - name: stg_customer
     description: "Cleaned customer data with basic data quality checks"
     columns:
       - name: CUSTOMER_ID
@@ -9,59 +9,143 @@ models:
         tests:
           - unique
           - not_null
+      - name: CUSTOMER_NAME
+        description: "Full name of the customer"
       - name: CUSTOMER_EMAIL
         description: "Primary email address with validity flag"
         tests:
           - not_null
+      - name: START_DATE
+        description: "Date when the customer relationship began"
+      - name: END_DATE
+        description: "Date when the customer relationship ended (if applicable)"
+      - name: STATUS
+        description: "Current status of the customer (active/inactive)"
+      - name: IS_VALID_EMAIL
+        description: "Data quality flag indicating if email format is valid (1=valid, 0=invalid)"
 
   - name: stg_sales_fact
     description: "Cleaned sales fact data with null handling and derived fields"
     columns:
       - name: ORDER_ID
+        description: "Unique identifier for the sales order"
         tests:
           - unique
           - not_null
       - name: ORDER_AMOUNT
+        description: "Total amount of the sales order"
         tests:
           - not_null
+      - name: CUSTOMER_ID
+        description: "Foreign key linking to the customer dimension"
+      - name: PRODUCT_ID
+        description: "Foreign key linking to the product dimension"
+      - name: ORDER_DATE
+        description: "Date when the order was placed"
 
   - name: stg_products
     description: "Cleaned product master data"
     columns:
       - name: PRODUCT_ID
+        description: "Unique identifier for the product"
         tests:
           - unique
           - not_null
+      - name: PRODUCT_NAME
+        description: "Name of the product"
+      - name: PRODUCT_CATEGORY_ID
+        description: "Foreign key linking to product category"
 
   - name: stg_product_categories
     description: "Cleaned product category data with inventory analysis"
     columns:
       - name: PRODUCT_ID
+        description: "Unique identifier for the product"
         tests:
           - unique
           - not_null
+      - name: CATEGORY_ID
+        description: "Unique identifier for the product category"
+      - name: CATEGORY_NAME
+        description: "Name of the product category"
+      - name: SUBCATEGORY
+        description: "Subcategory classification within the main category"
+      - name: BRAND
+        description: "Brand or manufacturer of the product"
+      - name: SUPPLIER_ID
+        description: "Identifier for the product supplier"
+      - name: COST_PRICE
+        description: "Purchase cost price from supplier"
       - name: RETAIL_PRICE
+        description: "Selling price to customers"
         tests:
           - not_null
+      - name: MARGIN_PERCENT
+        description: "Profit margin percentage (retail price - cost price) / retail price"
+      - name: STOCK_LEVEL
+        description: "Current quantity available in inventory"
+      - name: REORDER_POINT
+        description: "Minimum stock level that triggers reordering"
+      - name: DISCONTINUED
+        description: "Flag indicating if product has been discontinued"
+      - name: LAUNCH_DATE
+        description: "Date when product was first launched"
+      - name: LAST_UPDATED
+        description: "Date when product information was last updated"
+      - name: PROFIT_MARGIN
+        description: "Absolute profit margin (retail price - cost price)"
+      - name: INVENTORY_STATUS
+        description: "Derived inventory status (In Stock/Needs Reorder/Out of Stock)"
 
   - name: stg_subscriptions
     description: "Cleaned subscription data with status categorization"
     columns:
       - name: SUBSCRIPTION_ID
+        description: "Unique identifier for the subscription"
         tests:
           - unique
           - not_null
+      - name: CUSTOMER_ID
+        description: "Foreign key linking to the customer"
+      - name: PLAN_TYPE
+        description: "Type of subscription plan"
+      - name: START_DATE
+        description: "Date when subscription began"
+      - name: END_DATE
+        description: "Date when subscription ends or ended"
+      - name: STATUS
+        description: "Current status of subscription (active/cancelled/expired)"
 
   - name: stg_kafka_stream
     description: "Cleaned event stream data from Kafka"
     columns:
+      - name: CUSTOMER_ID
+        description: "Foreign key linking to the customer"
+      - name: PRODUCT_ID
+        description: "Foreign key linking to the product"
+      - name: INTERACTION_TYPE
+        description: "Type of customer interaction (purchase/view/add_to_cart)"
       - name: TIMESTAMP
+        description: "Exact timestamp when the event occurred"
         tests:
           - not_null
+      - name: EVENT_DATE
+        description: "Date derived from timestamp for partitioning/analysis"
+      - name: EVENT_CATEGORY
+        description: "Categorized event type (Conversion/Engagement/Other)"
 
   - name: stg_weather_data
     description: "Cleaned weather data with categorization"
     columns:
       - name: DATE
+        description: "Date of weather observation"
         tests:
           - not_null
+      - name: TEMPERATURE
+        description: "Average temperature in degrees Celsius"
+      - name: PRECIPITATION
+        description: "Amount of precipitation in millimeters"
+      - name: WEATHER_CONDITION
+        description: "Description of weather conditions (sunny/rainy/cloudy)"
+      - name: WEATHER_SEVERITY
+        description: "Categorized weather severity (mild/moderate/severe)"
