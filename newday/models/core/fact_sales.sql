@@ -12,10 +12,14 @@ SELECT
     sf.PRODUCT_ID,
     sf.ORDER_DATE,
     sf.ORDER_AMOUNT,
+    sf.ORDER_QUANTITY,
+    sf.PAYMENT_METHOD,
     -- Degenerate dimension
     sf.ORDER_ID AS ORDER_NUMBER,
     -- Additive facts
     sf.ORDER_AMOUNT AS sales_amount,
+    sf.DISCOUNT_APPLIED,
+    sf.SHIPPING_COST,
     pc.COST_PRICE * (sf.ORDER_AMOUNT / NULLIF(pc.RETAIL_PRICE, 0)) AS cost_amount,
     sf.ORDER_AMOUNT - (pc.COST_PRICE * (sf.ORDER_AMOUNT / NULLIF(pc.RETAIL_PRICE, 0))) AS gross_profit,
     -- Ratios
