@@ -122,14 +122,18 @@ Business-domain focused models designed for stakeholder analysis.
 
 1. Clone the repository  
 ```bash
-   git clone https://github.com/yourusername/ecommerce-analytics-dbt.git
+   git clone https://github.com/fenil12/dbt-sql-solutions.git
 ```
-2. Configure your profile in ~/profiles.yml
-3. Run models
+2. Setup virtual environment
+```bash
+source ci/setup.sh
+```
+3. Configure your profile in ~/profiles.yml
+4. Run models
 ```bash
 dbt run
 ```
-4. Test data quality
+5. Test data quality
 ```bash
 dbt test
 ```
