@@ -1,21 +1,7 @@
 version: 2
 
 models:
-  - name: bridge_product_category
-    description: "Bridge table connecting products to their categories and subcategories. Supports many-to-many relationships between products and product hierarchies."
-    columns:
-      - name: PRODUCT_ID
-        description: "Unique identifier for the product. Foreign key to products dimension."
-      - name: CATEGORY_ID
-        description: "Unique identifier for the product category. Foreign key to product categories."
-      - name: CATEGORY_NAME
-        description: "Name of the product category (e.g., Electronics, Clothing, Home Goods)."
-      - name: SUBCATEGORY
-        description: "More specific classification within the category (e.g., Smartphones, T-Shirts, Kitchenware)."
-      - name: load_timestamp
-        description: "Timestamp when this record was loaded into the data warehouse."
-
-  - name: dim_customers
+  - name: dim_customer
     description: "Customer dimension table with Type 2 Slowly Changing Dimensions (SCD) to track historical changes in customer attributes over time."
     columns:
       - name: CUSTOMER_ID
@@ -111,34 +97,6 @@ models:
       - name: DAYS_SINCE_LAUNCH
         description: "Number of days since the product was launched, calculated from current date."
 
-  - name: fact_customer_behavior_events
-    description: "Fact table tracking customer interaction events and behavioral data from various touchpoints. Used for customer journey analysis and engagement metrics."
-    columns:
-      - name: event_id
-        description: "Unique identifier for each customer interaction event. Surrogate key for the fact table."
-      - name: CUSTOMER_ID
-        description: "Foreign key to the customer dimension, identifying who performed the event."
-      - name: PRODUCT_ID
-        description: "Foreign key to the product dimension, identifying which product was involved in the event."
-      - name: TIMESTAMP
-        description: "Exact timestamp when the event occurred."
-      - name: EVENT_DATE
-        description: "Date when the event occurred (derived from timestamp)."
-      - name: INTERACTION_TYPE
-        description: "Type of customer interaction (e.g., page_view, add_to_cart, purchase, review)."
-      - name: EVENT_CATEGORY
-        description: "High-level categorization of events (e.g., Engagement, Conversion, Support)."
-      - name: customer_event_sequence
-        description: "Sequential number of events for each customer, ordered by timestamp."
-      - name: session_id
-        description: "Identifier for grouping events into user sessions (simplified as customer_id + date)."
-      - name: hour_of_day
-        description: "Hour of the day when the event occurred (0-23)."
-      - name: is_conversion
-        description: "Boolean indicator (1/0) for events that represent conversion actions."
-      - name: is_engagement
-        description: "Boolean indicator (1/0) for events that represent engagement actions."
-
   - name: fact_sales
     description: "Sales fact table containing transactional sales data with financial metrics, profit calculations, and revenue analysis."
     columns:
@@ -162,43 +120,3 @@ models:
         description: "Gross profit calculated as sales_amount minus cost_amount."
       - name: gross_margin
         description: "Gross margin percentage calculated as gross_profit divided by sales_amount."
-
-  - name: fact_subscriptions
-    description: "Subscription fact table tracking customer subscription plans, status, duration, and recurring revenue metrics."
-    columns:
-      - name: SUBSCRIPTION_ID
-        description: "Unique identifier for each subscription instance."
-      - name: CUSTOMER_ID
-        description: "Foreign key to the customer dimension, identifying the subscriber."
-      - name: PLAN_TYPE
-        description: "Type of subscription plan (e.g., Basic, Premium, Enterprise)."
-      - name: SUBSCRIPTION_START_DATE
-        description: "Date when the subscription period began."
-      - name: SUBSCRIPTION_END_DATE
-        description: "Date when the subscription period ends or ended."
-      - name: STATUS
-        description: "Current status of the subscription (Active, Cancelled, Expired, etc.)."
-      - name: SUBSCRIPTION_DURATION_DAYS
-        description: "Planned or actual duration of the subscription in days."
-      - name: MONTHLY_FEE
-        description: "Recurring monthly charge for the subscription plan."
-      - name: is_active_subscription
-        description: "Boolean indicator (1/0) for currently active subscriptions."
-      - name: is_cancelled_subscription
-        description: "Boolean indicator (1/0) for cancelled subscriptions."
-
-  - name: fact_weather
-    description: "Conformed weather fact table containing daily weather conditions and categorical classifications for correlation analysis with business metrics."
-    columns:
-      - name: weather_date
-        description: "Date for which the weather data is recorded. Foreign key to date dimension."
-      - name: TEMPERATURE
-        description: "Recorded temperature in degrees Celsius or Fahrenheit."
-      - name: PRECIPITATION
-        description: "Amount of precipitation (rain, snow, etc.) in millimeters or inches."
-      - name: CITY
-        description: "City or location where the weather was recorded."
-      - name: TEMPERATURE_CATEGORY
-        description: "Categorical classification of temperature (e.g., Cold, Cool, Warm, Hot)."
-      - name: PRECIPITATION_CATEGORY
-        description: "Categorical classification of precipitation (e.g., None, Light, Moderate, Heavy)."

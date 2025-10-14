@@ -38,12 +38,20 @@ models:
     core:
       +materialized: table
       +schema: core
-    finance:
-      +materialized: table
-      +schema: finance
-    customer:
-      +materialized: table
-      +schema: customer
+    mart:
+      finance:
+        +materialized: table
+        +schema: finance
+      customer:
+        +materialized: table
+        +schema: customer
+      operation:
+        +materialized: table
+        +schema: operation
+      analytics:
+        +materialized: table
+        +schema: analytics
+
 
 seeds:
   newday:
