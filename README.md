@@ -113,8 +113,6 @@ Business-domain focused models designed for stakeholder analysis.
 
 - **dbt** – Data transformation and modeling  
 - **Snowflake / BigQuery / Redshift** – (configurable warehouse)  
-- **GitHub Actions** – CI/CD automation (optional)  
-- **Kafka** – Real-time event ingestion  
 
 ---
 
